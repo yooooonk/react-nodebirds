@@ -1,6 +1,11 @@
+/* eslint-disable react/react-in-jsx-scope */
+import AppLayout from "../compoenets/AppLayout";
+
 const Home = ()=>{
     return(
-        <div>Hello, Next</div>
+        <AppLayout>
+            <div>HOMEEEE</div>
+        </AppLayout>
     )
 }
 
