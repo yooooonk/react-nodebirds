@@ -1,12 +1,11 @@
 import {Button, Form, Input} from 'antd';
 import Link from 'next/link';
 import { useState, useCallback, useMemo } from 'react';
+import propTypes from 'prop-types'
+import useInput from '../hooks/useInput';
 
 
 const LoginForm = ({setIsLoggedIn}) => {
-    const [id, setId] = useState('')
-    const [password, setPassword] = useState('')
-    
     /*css*/
     const style = useMemo(()=>({
         marginTop:10
@@ -15,15 +14,11 @@ const LoginForm = ({setIsLoggedIn}) => {
     const formStytle = useMemo(()=>({        
         padding:'10px'
     }),[])
-
-    /*event*/
-    const onChangeId = useCallback((e)=>{        
-        setId(e.target.value)
-    },[])
     
-    const onChangePassword = useCallback((e)=>{
-        setPassword(e.target.value)
-    },[])    
+    const [id,onChangeId] = useInput('')
+    const [password,onChangePassword] = useInput('')
+    
+       
 
     const onSubmitForm = useCallback(()=>{
         console.log(id,password)
@@ -48,6 +43,7 @@ const LoginForm = ({setIsLoggedIn}) => {
                 <Input name="userpassword" 
                        value={password} 
                        onChange={onChangePassword} 
+                       type="password"
                        required
                 />
             </div>
@@ -58,6 +54,10 @@ const LoginForm = ({setIsLoggedIn}) => {
                 
         </Form>
     );
+}
+
+LoginForm.propTypes = {
+    setIsLoggedIn:propTypes.func.isRequired
 }
 
 export default LoginForm;

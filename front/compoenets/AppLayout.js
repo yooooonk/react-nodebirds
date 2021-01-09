@@ -25,13 +25,13 @@ const AppLayout = ({children})=>{
                     {isLoggedIn ? <UserProfile setIsLoggedIn={setIsLoggedIn}/> : <LoginForm setIsLoggedIn={setIsLoggedIn}/>}
                 </Col>
                 <Col xs={24} md={12} >
-                    가운데메뉴
+                    {children}
                 </Col>
                 <Col xs={24} md={6} >
-                    오른쪽메뉴
+                    Made by ouo_yoonk
                 </Col>
             </Row>    
-            {children}
+            
         </div>
     )
 }
