@@ -3,7 +3,7 @@ export const initialState = {
         id:1,
         User:{
             id:1,
-            nickname:'user1'
+            nickname:'김뿡'
         },
         content : '첫 번재 게시글 #해시태그 #익스프레스',
         Images:[
