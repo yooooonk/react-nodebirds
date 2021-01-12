@@ -1,10 +1,11 @@
-import { Button, Card, Popover } from "antd"
+import { Button, Card, Comment, Popover, List } from "antd"
 import {RetweetOutlined, HeartOutlined,MessageOutlined, EllipsisOutlined, HeartTwoTone} from '@ant-design/icons'
 import propTypes from 'prop-types'
 import { useSelector } from "react-redux"
 import Avatar from "antd/lib/avatar/avatar"
 import PostImages from "./PostImages"
 import { useCallback, useState } from "react"
+import CommentForm from "./CommentForm"
 
  
 
@@ -50,11 +51,25 @@ const PostCard = ({post})=>{
             </Card>
             {commentFormOpened &&(
                 <div>
-                    댓글부분
+                    <CommentForm post={post}/>
+                    <List
+                        header={`${post.Comments.length}개의 댓글`} 
+                        itemLayout="horizontal"    
+                        dataSource={post.Comments}
+                        renderItem={(item)=>(
+                            <li>
+                                <Comment 
+                                    author={item.User.nickname}
+                                    avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                                    content={item.content}
+                                />
+                            </li>
+                        )}
+                    />
+                        
                 </div>    
             )}
-            {/* <CommentForm />
-            <Comments /> */}
+            
         </div>
     )
 }
