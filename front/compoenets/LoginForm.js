@@ -2,8 +2,8 @@ import {Button, Form, Input} from 'antd';
 import Link from 'next/link';
 import { useState, useCallback, useMemo } from 'react';
 import useInput from '../hooks/useInput';
-import { useDispatch } from 'react-redux';
-import {loginAction} from '../reducers/user'
+import { useDispatch, useSelector } from 'react-redux';
+import { loginRequestAction} from '../reducers/user'
 
 const LoginForm = ({setIsLoggedIn}) => {
     /*css*/
@@ -18,12 +18,11 @@ const LoginForm = ({setIsLoggedIn}) => {
     const dispatch = useDispatch();
     const [id,onChangeId] = useInput('')
     const [password,onChangePassword] = useInput('')
-    
+    const {loginLoading} = useSelector((state)=> state.user)
        
 
-    const onSubmitForm = useCallback(()=>{
-        console.log(id,password)
-        dispatch(loginAction({id,password}))
+    const onSubmitForm = useCallback(()=>{        
+        dispatch(loginRequestAction({id,password}))
     },[id,password])
     
     
@@ -49,7 +48,7 @@ const LoginForm = ({setIsLoggedIn}) => {
                 />
             </div>
             <div style={style}>
-                <Button type="primary" htmlType="submit" loading={false}>로그인</Button>
+                <Button type="primary" htmlType="submit" loading={loginLoading}>로그인</Button>
                 <Link href="/signup"><a><Button>회원가입</Button> </a></Link>
             </div>
                 

@@ -1,14 +1,16 @@
 import {Button, Card} from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
+import mitt from 'next/dist/next-server/lib/mitt';
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { logoutAction } from '../reducers/user';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutRequestAction } from '../reducers/user';
 
 const UserProfile = ({setIsLoggedIn})=>{
+    const {me, logoutLoading} = useSelector((state)=>state.user)
     const dispatch = useDispatch();
     
     const onLogout = useCallback(()=>{
-        dispatch(logoutAction())
+        dispatch(logoutRequestAction())
     },[])
     return (
         <Card
@@ -20,10 +22,10 @@ const UserProfile = ({setIsLoggedIn})=>{
             ]}
         >        
             <Card.Meta
-                avatar={<Avatar>ZC</Avatar>}
-                title="hey"
+                avatar={<Avatar>{me.nickname[0]}</Avatar>}
+                title={me.nickname}
             />
-            <Button onClick={onLogout}>로그아웃</Button>
+            <Button onClick={onLogout} loading={logoutLoading}>로그아웃</Button>
         </Card>
     )
 }
