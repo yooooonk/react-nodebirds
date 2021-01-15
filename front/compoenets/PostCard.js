@@ -1,17 +1,20 @@
 import { Button, Card, Comment, Popover, List } from "antd"
 import {RetweetOutlined, HeartOutlined,MessageOutlined, EllipsisOutlined, HeartTwoTone} from '@ant-design/icons'
 import propTypes from 'prop-types'
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import Avatar from "antd/lib/avatar/avatar"
 import PostImages from "./PostImages"
 import { useCallback, useState } from "react"
 import CommentForm from "./CommentForm"
 import PostCardContent from "./PostCardContent"
+import { removePostRequest } from "../reducers/post"
 
  
 
 const PostCard = ({post})=>{
+    const dispatch = useDispatch()
     const id = useSelector((state)=>state.user.me?.id)
+    const {removePostLoading} = useSelector((state)=>state.post)
     const [liked, setLiked] = useState(false);
     const [commentFormOpened, setCommnetFormOpened] = useState(false);
     
@@ -21,6 +24,10 @@ const PostCard = ({post})=>{
     const onToggleComment = useCallback(()=>{
         setCommnetFormOpened((prev)=>!prev);
     },[])
+
+    const onRemoePost = useCallback(()=>{
+        dispatch(removePostRequest(post.id))
+    },[post.id])
     return (
         <div>
             <Card
@@ -36,7 +43,7 @@ const PostCard = ({post})=>{
                                         {id && post.User.id === id ? (
                                             <> 
                                                 <Button>수정</Button> 
-                                                <Button type="danger">삭제</Button>
+                                                <Button type="danger" loading={removePostLoading} onClick={onRemoePost}>삭제</Button>
                                             </>
                                             ) : <Button>신고</Button>}
                                     </Button.Group>)}>
