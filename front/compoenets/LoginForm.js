@@ -16,24 +16,24 @@ const LoginForm = ({setIsLoggedIn}) => {
     }),[])
     
     const dispatch = useDispatch();
-    const [id,onChangeId] = useInput('')
+    const [email,onChangeEmail] = useInput('')
     const [password,onChangePassword] = useInput('')
     const {loginLoading} = useSelector((state)=> state.user)
        
 
     const onSubmitForm = useCallback(()=>{        
-        dispatch(loginRequestAction({id,password}))
-    },[id,password])
+        dispatch(loginRequestAction({email,password}))
+    },[email,password])
     
     
     return (
         <Form onFinish={onSubmitForm} style={formStytle}>
             <div>
-                <label htmlFor="user-id">아이디</label>
+                <label htmlFor="user-email">이메일</label>
                 <br/>
-                <Input name="user-id" 
-                       value={id} 
-                       onChange={onChangeId} 
+                <Input name="user-email" 
+                       value={email} 
+                       onChange={onChangeEmail} 
                        required
                 />
             </div>

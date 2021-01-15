@@ -1,14 +1,16 @@
-import { all, fork, takeLatest } from "redux-saga/effects"
-import { addComment, ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS } from "../../reducers/post";
+import { all, delay, fork, put, takeLatest } from "redux-saga/effects"
+import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS } from "../../reducers/post";
 
 
 
 function* addPost(action){
+    
     try{
-        const result = yield call(addPostAPI, action.data);
+        //const result = yield call(addPostAPI, action.data);
+        delay(1000)
         yield put({
             type:ADD_POST_SUCCESS,
-            data:result.data
+            data:action.data
         })
     }catch(err){
         yield put({
@@ -23,11 +25,12 @@ function* addPostAPI(data){
 }
 
 function* addComment(action){
+    
     try{
-        const result = yield call(addPostAPI, action.data);
+        delay(1000)
         yield put({
             type:ADD_COMMENT_SUCCESS,
-            data:result.data
+            data:action.data
         })
     }catch(err){
         yield put({

@@ -5,11 +5,11 @@ import PostCard from "../compoenets/PostCard";
 import Postform from "../compoenets/PostForm";
 
 const Home = ()=>{
-    const { isLoggedIn } = useSelector(state=>state.user);
+    const { me } = useSelector(state=>state.user);
     const {mainPosts} = useSelector(state=>state.post);
     return(
         <AppLayout>
-            {isLoggedIn && <Postform />}
+            {me && <Postform />}
             {mainPosts.map((post,index)=> { return <PostCard key={post.id} post={post} />}) }
         </AppLayout>
     )

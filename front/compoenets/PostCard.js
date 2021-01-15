@@ -78,7 +78,7 @@ const PostCard = ({post})=>{
 
 PostCard.propTypes = {
     post : propTypes.shape({
-        id:propTypes.number,
+        id:propTypes.string,
         User:propTypes.object,
         content : propTypes.string,
         createdAt:propTypes.object,

@@ -11,6 +11,12 @@ export const initialState = {
     unfollowLoading : false,
     unfollowDone:false,
     unfollowError:null,
+    signupLoading:false,
+    signupDone:false,
+    signupError:null,
+    changeNicknameLoading:false,
+    changeNicknameDone:false,
+    changeNicknameError:null,
     me:null,
     signUpData:{},
     loginData:{}
@@ -28,6 +34,10 @@ export const SIGN_UP_REQUEST = 'SIGN_UP_REQUEST'
 export const SIGN_UP_SUCCESS = 'SIGN_UP_SUCCESS'
 export const SIGN_UP_FAILURE = 'SIGN_UP_FAILURE'
 
+export const CHANGE_NICKNAME_REQUEST = 'CHANGE_NICKNAME_REQUEST'
+export const CHANGE_NICKNAME_SUCCESS = 'CHANGE_NICKNAME_SUCCESS'
+export const CHANGE_NICKNAME_FAILURE = 'CHANGE_NICKNAME_FAILURE'
+
 export const FOLLOW_REQUEST = 'FOLLOW_REQUEST'
 export const FOLLOW_SUCCESS = 'FOLLOW_SUCCESS'
 export const FOLLOW_FAILURE = 'FOLLOW_FAILURE'
@@ -41,7 +51,8 @@ const dummyUser = (data)=>({
     nickname:'yoonk',
     id:1,
     Posts:[],
-    Followers:[]
+    Followers:[{nickname:'서은광'},  {nickname:'이창섭'},{nickname:'이민혁'}],
+    Followings:[{nickname:'임현식'},  {nickname:'프니엘'},{nickname:'육성재'}]
 });
 
 
@@ -113,24 +124,41 @@ const reducer = (state = initialState, action)=>{
         case SIGN_UP_REQUEST :
             return {                                         
                     ...state,
-                    logoutLoading : true,
-                    logoutDone:false,
-                    logoutError:null
+                    signupLoading : true,
+                    signupDone:false,
+                    signupError:null
         };
         case SIGN_UP_SUCCESS : 
                 return {
                     ...state,
-                    logoutLoading : false,
-                    logoutDone : false,  
-                    loginDone:false,
-                    me : null
+                    signupLoading : false,
+                    signupDone : false                                        
         };      
         case SIGN_UP_FAILURE : 
                 return {
                     ...state,                    
-                    logoutLoading : false,
-                    loginError:action.error
+                    signupLoading : false,
+                    signupError:action.error
         };  
+        case CHANGE_NICKNAME_REQUEST :
+            return {                                         
+                    ...state,
+                    changeNicknameLoading : true,
+                    changeNicknameDone:false,
+                    changeNicknameError:null
+        };
+        case CHANGE_NICKNAME_SUCCESS : 
+                return {
+                    ...state,
+                    changeNicknameLoading : false,
+                    changeNicknameDone : false                                        
+        };      
+        case CHANGE_NICKNAME_FAILURE : 
+                return {
+                    ...state,                    
+                    changeNicknameLoading : false,
+                    changeNicknameError:action.error
+        };
         default:
             return state;
     }
