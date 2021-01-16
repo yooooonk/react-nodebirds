@@ -1,5 +1,7 @@
 import shortid from 'shortid'
 import produce from 'immer'
+import faker, { fake } from 'faker'
+
 
 export const initialState = {
     mainPosts:[{
@@ -27,6 +29,10 @@ export const initialState = {
           }]
     }],
     imagePaths:[],
+    loadPostLoading:false,
+    loadPostDone:false,
+    loadPostError:null,
+    hasMorePost:true,
     addPostLoading:false,
     addPostDone:false,
     addPostError:null,
@@ -38,6 +44,25 @@ export const initialState = {
     addCommentError:null
     
 }
+export const generateDummyPost = (number)=>Array(number).fill().map(()=>({
+  id:shortid.generate(),
+  User:{
+    id:shortid.generate(),
+    nickname:faker.name.findName()
+  },
+  content:faker.lorem.paragraph(),
+  Images:[{
+    src:faker.image.image()
+  }],
+  Comments:[{
+    User:{
+      id:shortid.generate(),
+      nickname:faker.name.findName()
+    },
+    content:faker.lorem.sentence()
+  }]
+}));
+
 
 const dummyPost = (data)=>{
   
@@ -62,6 +87,10 @@ const dummyComment = (data)=>({
     nickname:'haha'
   }
 })
+
+export const LOAD_POST_REQUEST = 'LOAD_POST_REQUEST';
+export const LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS';
+export const LOAD_POST_FAILURE = 'LOAD_POST_FAILURE';
 
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
@@ -111,6 +140,24 @@ const reducer = (state=initialState,action)=>{
             draft.addPostError = action.error                
             break;
         
+        case LOAD_POST_REQUEST :
+              draft.loadPostLoading=true,
+              draft.loadPostDone=false;
+              draft.loadPostError=null;
+            break;
+            
+        case LOAD_POST_SUCCESS :
+              draft.mainPosts = draft.mainPosts.concat(action.data)
+              draft.hasMorePost = draft.mainPosts.length <50;
+              draft.loadPostLoading = false;
+              draft.loadPostDone = true;
+              break;
+          
+        case LOAD_POST_FAILURE :
+              draft.loadPostLoading = false;
+              draft.loadPostError = action.error                
+              break;
+
         case REMOVE_POST_REQUEST :
             draft.removePostLoading=true,
             draft.removePostDone=false,
