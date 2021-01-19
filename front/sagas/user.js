@@ -8,11 +8,11 @@ import { FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOG_IN_FAILURE, LOG_IN_
 function* logIn(action){
     
     try{        
-        //const result = yield call(loginAPI)
-        delay(1000)
+        const result = yield call(loginAPI,action.data)
+        
         yield put({
             type:LOG_IN_SUCCESS,
-            data:action.data
+            data:result.data
         })
     }catch(err){
         yield put({
@@ -21,8 +21,9 @@ function* logIn(action){
         });
     }    
 }
-function loginAPI(){
-    return axios.post('/api/login')
+function loginAPI(data){
+    return axios.post('/user/login',data)
+    
 }
 
 // logout
@@ -45,10 +46,10 @@ function* signUp(action){
     
    try{        
         const result = yield call(signUpAPI,action.data)
-        console.log(result)
+        
         yield put({
             type:SIGN_UP_SUCCESS,
-            data:action.data
+            data: result.data
         })
     }catch(err){
         console.log(err)
@@ -60,7 +61,7 @@ function* signUp(action){
 }
 function signUpAPI(data){
     
-    return axios.post('http://localhost:3065/user/signup',data)
+    return axios.post('/user/signup',data)
 }
 
 function* follow(action){
