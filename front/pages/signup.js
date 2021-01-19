@@ -1,12 +1,13 @@
 import AppLayout from "../compoenets/AppLayout";
 import Head from 'next/head'
 import {Button, Form,Input} from  'antd'
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useInput from '../hooks/useInput';
 import styled from 'styled-components'
 import Checkbox from "antd/lib/checkbox/Checkbox";
 import { signupRequestAction, SIGN_UP_REQUEST } from "../reducers/user";
 import { useDispatch, useSelector } from "react-redux";
+import Router from "next/router";
 
 const ErrorMessage = styled.div`
     color : red;
@@ -14,7 +15,7 @@ const ErrorMessage = styled.div`
 
 const Signup = ()=>{
     const dispatch = useDispatch()
-    const {signupLoading} = useSelector((state)=>state.user)
+    const {signupLoading,signupDone,signupError} = useSelector((state)=>state.user)
 
     const [email,onChangeEmail] = useInput('')
     const [password,onChangePassword] = useInput('')
@@ -46,6 +47,21 @@ const Signup = ()=>{
         
         dispatch(signupRequestAction({email,password,nickname}))
     },[email, nickname, password,passwordCheck,term])
+
+    useEffect(()=>{
+        if(signupDone){
+            console.log('done')
+            Router.push('/');
+        }
+    },[signupDone])
+
+    useEffect(()=>{
+        if(signupError){
+            alert(signupError)
+            console.log(signupError)
+        }
+    
+    },[signupError])
     return (
         <AppLayout>
             <Head>

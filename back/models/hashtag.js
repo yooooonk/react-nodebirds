@@ -1,9 +1,7 @@
-const { DataTypes } = require("sequelize/types");
-const { sequelize } = require(".");
 
 module.exports = (sequelize,DataTypes) =>{   
 
-    const Hashtag = sequelize.define('User', {
+    const Hashtag = sequelize.define('Hashtag', {
         name:{
             type:DataTypes.STRING(20),
             allowNull:false,
