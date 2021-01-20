@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const {User} = require('../models');
+const {User, Post} = require('../models');
 const bcrypt = require('bcrypt')
-const passport = require('passport')
+const passport = require('passport');
+const {isLoggedIn, isNotLoggedIn} = require('./middleware')
 
-router.post('/signup', async(req,res,next)=>{
+router.post('/signup', isNotLoggedIn, async(req,res,next)=>{
     try{
         const exUser = await User.findOne({
             where:{
@@ -32,26 +33,47 @@ router.post('/signup', async(req,res,next)=>{
 
 })
 
-router.post('/login',(req,res,next)=>{
+router.post('/login',isNotLoggedIn, (req,res,next)=>{
     passport.authenticate('local',(serverError,user,clientError)=>{
         if(serverError){
             console.error(serverError);
             return next(serverError)
-        }
-
-        if(clientError){
+        }        
+        
+        if(clientError){            
             return res.status(401).send(clientError.reason)
         }
 
-        return req.login(user,async (loginErr)=>{
-            if(loginErr){
-                console.error(loginErr)
+        return req.login(user,async (loginErr)=>{ // passport login - passport/index.js
+            if(loginErr){                
                 return next(loginErr)
             }
-
-            return res.status(200).json(user);
+            const fullUserWithoutPassword = await User.findOne({
+                where:{id:user.id},
+                attributes:{
+                    exclude:['password']
+                },
+                include:[{
+                    model:Post
+                },{
+                    model:User,
+                    as:'Followers'
+                },{
+                    model:User,
+                    as:'Followings'
+                }]
+            })
+            
+            return res.status(200).json(fullUserWithoutPassword);
         })
     })(req,res,next);
+})
+
+router.post('/logout',isLoggedIn,(req,res,next)=>{
+    console.log(req)
+    req.logout();
+    req.session.destroy();
+    res.status(200).send('ok')
 })
 
 

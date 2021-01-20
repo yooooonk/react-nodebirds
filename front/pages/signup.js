@@ -15,7 +15,7 @@ const ErrorMessage = styled.div`
 
 const Signup = ()=>{
     const dispatch = useDispatch()
-    const {signupLoading,signupDone,signupError} = useSelector((state)=>state.user)
+    const {signupLoading,signupDone,signupError,me} = useSelector((state)=>state.user)
 
     const [email,onChangeEmail] = useInput('')
     const [password,onChangePassword] = useInput('')
@@ -49,9 +49,15 @@ const Signup = ()=>{
     },[email, nickname, password,passwordCheck,term])
 
     useEffect(()=>{
+        if(me && me.id){            
+            Router.replace('/'); // 뒤로가기했을 때 그 페이지가 나오지않게
+        }
+    },[me])
+
+    useEffect(()=>{
         if(signupDone){
-            console.log('done')
-            Router.push('/');
+            
+            Router.replace('/');
         }
     },[signupDone])
 

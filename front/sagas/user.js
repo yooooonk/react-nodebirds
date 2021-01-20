@@ -17,18 +17,17 @@ function* logIn(action){
     }catch(err){
         yield put({
             type:LOG_IN_FAILURE,
-            error:err.response.data
+            error:err.response.data 
         });
     }    
 }
 function loginAPI(data){
-    return axios.post('/user/login',data)
-    
+    return axios.post('/user/login',data)    
 }
 
 // logout
 function* logOut(){
-    
+    const result = yield call(logoutAPI)
     try {        
         yield put({
             type:LOG_OUT_SUCCESS    
@@ -37,9 +36,13 @@ function* logOut(){
     } catch (error) {
         yield put({
             type:LOG_OUT_FAILURE,
-            error:err.response.data
+            error:error.response.data
         });
     }
+}
+
+function logoutAPI(){
+    return axios.post('/user/logout')    
 }
 
 function* signUp(action){

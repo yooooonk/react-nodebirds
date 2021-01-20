@@ -1,5 +1,5 @@
 import produce from 'immer'
-import { bindActionCreators } from 'redux'
+
 
 export const initialState = {
     loginLoading : false, // 로그인 시도중
@@ -94,9 +94,10 @@ const reducer = (state = initialState, action)=>{
                 break;
             
             case LOG_IN_SUCCESS : 
+                
                 draft.loginLoading = false;
                 draft.loginDone = true;
-                draft.me = dummyUser(action.data)        
+                draft.me = action.data
                 break;
             
             case LOG_IN_FAILURE : 
@@ -154,11 +155,11 @@ const reducer = (state = initialState, action)=>{
                 break;
             
             case ADD_POST_TO_ME : 
-                draft.me.Posts.unshift({id:action.data.id});
+                draft.me.Post.unshift({id:action.data.id});
                 break;
 
             case REMOVE_POST_OF_ME : 
-                draft.me.Posts = draft.me.Posts.filter((v)=>v.id !== action.data);
+                draft.me.Post = draft.me.Post.filter((v)=>v.id !== action.data);
                 break;
             
             case FOLLOW_REQUEST :               
