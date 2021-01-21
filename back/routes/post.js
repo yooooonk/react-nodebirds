@@ -31,32 +31,36 @@ router.post('/',async (req,res)=>{
 router.post('/:postId/comment',isLoggedIn,async (req,res)=>{ // POST /post/1/comment
     try {
         const post = await Post.findOne({
-            where:{id:req.params.id}
+            where:{id:req.params.postId}
         })
 
+        console.log(post)
         if(!post){
             return res.status(403).send('존재하지 않는 게시글입니다')
         }
-        const newComment = await Post.create({
+        
+        const newComment = await Comment.create({
             content:req.body.content,
-            PostId:req.params.postId
+            PostId:parseInt(req.params.postId),
+            UserId:req.user.id
+        })
+        
+        const fullComment = await Comment.findOne({
+            where:{id:newComment.id},
+            include:[
+                {
+                    model:User,
+                    attributes:['id','nickname']
+                }
+            ]
         })
 
-        res.status(200).json(newComment)
+        res.status(200).json(fullComment)
     } catch (error) {
         console.error(error);
         next(error)
     }    
 })
-
-router.get('/',(req,res)=>{
-    res.json([
-        {id:1,content:'hello'},
-        {id:2,content:'hello2'},
-        {id:3,content:'hello3'},
-    ])
-})
-
 
 
 router.delete('/api/post',(req,res)=>{

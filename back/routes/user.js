@@ -5,6 +5,43 @@ const bcrypt = require('bcrypt')
 const passport = require('passport');
 const {isLoggedIn, isNotLoggedIn} = require('./middleware')
 
+router.get('/',async(req,res,next)=>{
+
+    try {
+        if(req.user){
+            
+            const fullUserWithoutPassword = await User.findOne({
+                where:{id:req.user.id},
+                attributes:{
+                    exclude:['password']
+                },
+                include:[{
+                    model:Post,
+                    attributes:['id']
+                },{
+                    model:User,
+                    as:'Followers',
+                    attributes:['id']
+                },{
+                    model:User,
+                    as:'Followings',
+                    attributes:['id']
+                }]
+            })
+
+            res.status(200).json(fullUserWithoutPassword)
+        }else{
+            res.status(200).json(null)
+        }
+        
+    } catch (error) {
+        console.error(error)
+        next(error)
+    }
+
+    
+})
+
 router.post('/signup', isNotLoggedIn, async(req,res,next)=>{
     try{
         const exUser = await User.findOne({

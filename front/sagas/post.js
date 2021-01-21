@@ -1,6 +1,6 @@
 import { all, call, delay, fork, put, takeLatest, throttle } from "redux-saga/effects"
 import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, generateDummyPost, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS } from "../reducers/post";
-import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from "../reducers/user";
+import { ADD_POST_TO_ME,REMOVE_POST_OF_ME } from "../reducers/user";
 import axios from 'axios'
 
 function* addPost(action){
@@ -31,19 +31,18 @@ function addPostAPI(data){
     return axios.post('/post',{content:data})
 }
 
-function* loadPost(action){
+function* loadPost(){
    
      try{
-        //const result = yield call(addPostAPI, action.data);
-        delay(1000)
-        const dummyPost = generateDummyPost(1)
-                
+        const result = yield call(loadPostAPI);
+                                
         yield put({
             type:LOAD_POST_SUCCESS,
-            data: dummyPost
+            data: result.data
         })
         
     }catch(err){
+        console.log(err)
         yield put({
             type:LOAD_POST_FAILURE,
             data: err.response.data
@@ -51,9 +50,10 @@ function* loadPost(action){
     }
 }
 
-function* loadPostAPI(data){
-    return axios.post('/api/post',data)
+function loadPostAPI(){
+    return axios.get('/posts')
 }
+
 function* removePost(action){
     
     try{
@@ -82,12 +82,13 @@ function* addComment(action){
     
     try{
         const result = yield call(addCommentAPI, action.data);        
-            
+        
         yield put({
             type:ADD_COMMENT_SUCCESS,
             data:result.data
         })
     }catch(err){
+        console.error(err)        
         yield put({
             type:ADD_COMMENT_FAILURE,
             data:err.response.data
@@ -95,9 +96,10 @@ function* addComment(action){
     }
 }
 
-function* addCommentAPI(data){
+function addCommentAPI(data){    
     return axios.post(`/post/${data.postId}/comment`,data)
 }
+
 
 
 function* watchAddPost(){
@@ -122,5 +124,6 @@ export default function* postSaga(){
         fork(watchLoadPost),
         fork(watchRemovePost),
         fork(watchAddComment)
+        
     ])
 }
