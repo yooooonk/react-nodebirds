@@ -128,5 +128,86 @@ router.patch('/nickname',isLoggedIn, async(req,res,next)=>{
     }
 })
 
+router.patch('/:userId/follow',isLoggedIn, async(req,res,next)=>{
+    try {
+        
+        const followingId= parseInt(req.params.userId);
+
+        const followingUser = await User.findOne({
+            where:{
+                id:followingId
+            }
+        });
+
+        if(!followingUser){
+            res.status(403).send('없는 계정은 팔로우할 수 없습니다')
+        }
+        
+        await followingUser.addFollowers(req.user.id);
+        
+        res.status(200).json({followingId})
+       
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+})
+
+router.delete('/:userId/follow',isLoggedIn, async(req,res,next)=>{
+    try {
+
+        const followingId= parseInt(req.params.userId);
+        
+        const followingUser = await User.findOne({
+            where:{
+                id:followingId
+            }
+        });
+
+        if(!followingUser){
+            res.status(403).send('없는 계정은 팔로우할 수 없습니다')
+        }
+
+        await followingUser.removeFollowers(req.user.id)
+        res.status(200).json({followingId})
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+})
+
+router.get('/followers',isLoggedIn, async(req,res,next)=>{
+    try {
+        const me = await User.findOne({where:{id:req.user.id}});
+
+        if(!me){
+            res.status(403).send('팔로워 목록을 가져올 수 없습니다')
+        }
+
+        const followers = me.getFollowers();
+
+        res.status(200).json({followers})
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+})
+
+router.get('/followings',isLoggedIn, async(req,res,next)=>{
+    try {
+        const me = await User.findOne({where:{id:req.user.id}});
+
+        if(!me){
+            res.status(403).send('팔로워 목록을 가져올 수 없습니다')
+        }
+
+        const followings = me.getFollowings();
+
+        res.status(200).json({followings})
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+})
 
 module.exports = router;

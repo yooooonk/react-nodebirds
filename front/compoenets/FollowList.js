@@ -1,17 +1,28 @@
 import {Button, Card, List} from 'antd'
 import { StopOutlined } from '@ant-design/icons'
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import propType from 'prop-types'
+import { useDispatch } from 'react-redux';
+import { UNFOLLOW_REQUEST } from '../reducers/user';
 
 const FollowerList = ({header,data})=>{
-   const loadStyle = useMemo(()=>({
+    const dispatch = useDispatch();
+    const loadStyle = useMemo(()=>({
        textAlign:'center',
        margin : '10px 0'
-   }),[])
+    }),[])
 
-   const listStyle = useMemo(()=>({
-    marginBotton:20
-}),[])
+    const listStyle = useMemo(()=>({
+        marginBotton:20    
+    }),[])
+
+    const onClick = ((id)=>{
+        console.log(id)
+       /*  dispatch({
+            type:UNFOLLOW_REQUEST,
+            data:id
+        }) */
+    }) 
     return(
         <List 
             style={listStyle}
@@ -23,7 +34,7 @@ const FollowerList = ({header,data})=>{
             dataSource={data}
             renderItem={item=>(
                 <List.Item style={{marginTop:20}}>
-                    <Card action={ [<StopOutlined key="stop"/>]} >
+                    <Card actions={ [<StopOutlined key="stop" onClick={onClick(item.id)}/>]} >
                         <Card.Meta description={item.nickname} />
                     </Card>
                 </List.Item>

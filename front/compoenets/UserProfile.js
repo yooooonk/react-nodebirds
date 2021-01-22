@@ -1,6 +1,5 @@
 import {Button, Card} from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
-import mitt from 'next/dist/next-server/lib/mitt';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutRequestAction } from '../reducers/user';
