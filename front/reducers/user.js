@@ -170,8 +170,9 @@ const reducer = (state = initialState, action)=>{
                 break;
 
             case CHANGE_NICKNAME_SUCCESS : 
-                draft.changeNicknameLoading = false
-                draft.changeNicknameDone = false                                       
+                draft.me.nickname = action.data.nickname;
+                draft.changeNicknameLoading = false;
+                draft.changeNicknameDone = false    ;                                   
                 break;
 
             case CHANGE_NICKNAME_FAILURE : 
@@ -184,7 +185,8 @@ const reducer = (state = initialState, action)=>{
                 break;
 
             case REMOVE_POST_OF_ME : 
-                draft.me.Post = draft.me.Post.filter((v)=>v.id !== action.data);
+                console.log(action.data)
+                draft.me.Posts = draft.me.Posts.filter((v)=>v.id !== action.data.id);
                 break;
             
             case FOLLOW_REQUEST :               

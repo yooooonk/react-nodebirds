@@ -22,6 +22,10 @@ router.get('/',async(req,res,next)=>{
                 }]
             },{
                 model:Image
+            },{
+                model:User, // 좋아요한사람
+                as:'Likers',
+                attributes:['id']
             }]
 
             

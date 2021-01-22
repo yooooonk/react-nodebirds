@@ -4,10 +4,10 @@ import propTypes from 'prop-types'
 import { useDispatch, useSelector } from "react-redux"
 import Avatar from "antd/lib/avatar/avatar"
 import PostImages from "./PostImages"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import CommentForm from "./CommentForm"
 import PostCardContent from "./PostCardContent"
-import { removePostRequest } from "../reducers/post"
+import { LIKE_POST_REQUEST, removePostRequest, UNLIKE_POST_REQUEST } from "../reducers/post"
 import FollowButton from "./FollowButton"
 
  
@@ -15,15 +15,36 @@ import FollowButton from "./FollowButton"
 const PostCard = ({post})=>{
     const dispatch = useDispatch()
     const id = useSelector((state)=>state.user.me?.id)
-    const {removePostLoading} = useSelector((state)=>state.post)
-    const [liked, setLiked] = useState(false);
+    const {removePostLoading, likePostError, unlikePostError} = useSelector((state)=>state.post)    
     const [commentFormOpened, setCommnetFormOpened] = useState(false);
-    
-    const onToggleLike = useCallback(()=>{
-        setLiked((prev)=>!prev)
+    const liked = post.Likers.find((v)=> v.id === id);
+
+    useEffect(()=>{
+        if(likePostError){
+            return alert(likePostError)
+        }
+
+        if(unlikePostError){
+            alert(unlikePostError)
+        }
+    },[likePostError,unlikePostError])
+
+    const onLike = useCallback(()=>{
+        dispatch({
+            type:LIKE_POST_REQUEST,
+            data:post.id
+        })
     },[])
+    
+    const onUnlike = useCallback(()=>{
+        dispatch({
+            type:UNLIKE_POST_REQUEST,
+            data:post.id
+        })
+    })
+    
     const onToggleComment = useCallback(()=>{
-        setCommnetFormOpened((prev)=>!prev);
+        setCommnetFormOpened((prev)=>!prev);   
     },[])
 
     const onRemoePost = useCallback(()=>{
@@ -36,8 +57,8 @@ const PostCard = ({post})=>{
                 actions={[
                     <RetweetOutlined key="retweet"/>,
                     liked
-                     ? <HeartTwoTone twoToneColor="#eb2f96" key="heartTwo" onClick={onToggleLike}/>
-                    : <HeartOutlined key="heart" onClick={onToggleLike}/>,
+                     ? <HeartTwoTone twoToneColor="#eb2f96" key="heartTwo" onClick={onUnlike}/>
+                    : <HeartOutlined key="heart" onClick={onLike}/>,
                     <MessageOutlined key="comment" onClick={onToggleComment}/>,
                     <Popover key="more" 
                             content={(<Button.Group>
@@ -93,6 +114,7 @@ PostCard.propTypes = {
         createdAt:propTypes.string,
         Comments:propTypes.arrayOf(propTypes.object),
         Images:propTypes.arrayOf(propTypes.object),
+        Likers:propTypes.arrayOf(propTypes.object)
     }).isRequired
 }
 

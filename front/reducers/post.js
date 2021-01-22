@@ -1,6 +1,6 @@
 import shortid from 'shortid'
 import produce from 'immer'
-import faker, { fake } from 'faker'
+import faker from 'faker'
 
 
 export const initialState = {
@@ -18,7 +18,13 @@ export const initialState = {
     removePostError:null,
     addCommentLoading:false,
     addCommentDone:false,
-    addCommentError:null
+    addCommentError:null,
+    likePostLoading:false,
+    likePostDone:false,
+    likePostError:null,
+    unlikePostLoading:false,
+    unlikePostDone:false,
+    unlikePostError:null,
     
 }
 export const generateDummyPost = (number)=>Array(number).fill().map(()=>({
@@ -69,6 +75,14 @@ export const LOAD_POST_REQUEST = 'LOAD_POST_REQUEST';
 export const LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS';
 export const LOAD_POST_FAILURE = 'LOAD_POST_FAILURE';
 
+export const LIKE_POST_REQUEST = 'LIKE_POST_REQUEST';
+export const LIKE_POST_SUCCESS = 'LIKE_POST_SUCCESS';
+export const LIKE_POST_FAILURE = 'LIKE_POST_FAILURE';
+
+export const UNLIKE_POST_REQUEST = 'UNLIKE_POST_REQUEST';
+export const UNLIKE_POST_SUCCESS = 'UNLIKE_POST_SUCCESS';
+export const UNLIKE_POST_FAILURE = 'UNLIKE_POST_FAILURE';
+
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
 export const ADD_POST_FAILURE = 'ADD_POST_FAILURE';
@@ -92,14 +106,50 @@ export const removePostRequest =(data)=>({
 })
 
 export const addCommentRequest =(data)=>({
-    type:ADD_COMMENT_REQUEST,
-    data
+  type:ADD_COMMENT_REQUEST,
+  data
 })
-
 
 const reducer = (state=initialState,action)=>{
     return produce(state,(draft)=>{
       switch (action.type) {
+        case LIKE_POST_REQUEST :
+          draft.likePostLoading=true,
+          draft.likePostDone=false;
+          draft.likePostError=null;
+        break;
+        
+        case LIKE_POST_SUCCESS :    
+            const likePost = draft.mainPosts.find((v)=> v.id === action.data.PostId)                    
+            likePost.Likers.push({id:action.data.UserId})
+            draft.likePostLoading = false;
+            draft.likePostDone = true;
+            break;
+        
+        case LIKE_POST_FAILURE :
+            draft.likePostLoading = false;
+            draft.likePostError = action.error                
+            break;
+        
+        case UNLIKE_POST_REQUEST :
+          draft.unlikePostLoading=true,
+          draft.unlikePostDone=false;
+          draft.unlikePostError=null;
+        break;
+            
+        case UNLIKE_POST_SUCCESS :  
+            const unlikePost = draft.mainPosts.find((v)=> v.id === action.data.PostId)                    
+            unlikePost.Likers = unlikePost.Likers.filter((v)=>v.id !== action.data.UserId)
+            
+            draft.unlikePostLoading = false;
+            draft.unlikePostDone = true;
+            break;
+        
+        case UNLIKE_POST_FAILURE :
+            draft.unlikePostLoading = false;
+            draft.unlikePostError = action.error                
+            break;
+
         case ADD_POST_REQUEST :
             draft.addPostLoading=true,
             draft.addPostDone=false;
@@ -142,10 +192,10 @@ const reducer = (state=initialState,action)=>{
             draft.removePostError=false
             break;            
         
-        case REMOVE_POST_SUCCESS :          
-            draft.mainPosts = draft.mainPosts.filter((v)=>v.id !== action.data);
+        case REMOVE_POST_SUCCESS :                  
             draft.removePostLoading=false;
             draft.removePostDone=true;
+            draft.mainPosts = draft.mainPosts.filter((v)=>v.id !== action.data.PostId);
             break;                   
         
         case REMOVE_POST_FAILURE :
