@@ -1,7 +1,6 @@
 import AppLayout from "../compoenets/AppLayout";
 import NicknameEditForm from "../compoenets/NicknameEditForm";
 import FollowList from "../compoenets/FollowList";
-import FollowingList from "../compoenets/FollowingList";
 import router from 'next/router';
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
