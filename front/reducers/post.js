@@ -25,6 +25,12 @@ export const initialState = {
     unlikePostLoading:false,
     unlikePostDone:false,
     unlikePostError:null,
+    uploadImagesLoading:false,
+    uploadImagesDone:false,
+    uploadImagesError:null,
+    retweetLoading: false,
+    retweetDone: false,
+    retweetError: null,
     
 }
 export const generateDummyPost = (number)=>Array(number).fill().map(()=>({
@@ -95,6 +101,16 @@ export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST';
 export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
 export const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
   
+export const UPLOAD_IMAGES_REQUEST = 'UPLOAD_IMAGES_REQUEST';
+export const UPLOAD_IMAGES_SUCCESS = 'UPLOAD_IMAGES_SUCCESS';
+export const UPLOAD_IMAGES_FAILURE = 'UPLOAD_IMAGES_FAILURE';
+
+export const RETWEET_REQUEST = 'RETWEET_REQUEST';
+export const RETWEET_SUCCESS = 'RETWEET_SUCCESS';
+export const RETWEET_FAILURE = 'RETWEET_FAILURE';
+
+export const REMOVE_IMAGE = 'REMOVE_IMAGE';
+
 export const addPostRequest =(data)=>({
       type:ADD_POST_REQUEST,
       data
@@ -113,6 +129,24 @@ export const addCommentRequest =(data)=>({
 const reducer = (state=initialState,action)=>{
     return produce(state,(draft)=>{
       switch (action.type) {
+        case RETWEET_REQUEST:
+          draft.retweetLoading = true;
+          draft.retweetDone = false;
+          draft.retweetError = null;
+          break;
+        case RETWEET_SUCCESS: {
+          draft.retweetLoading = false;
+          draft.retweetDone = true;
+          draft.mainPosts.unshift(action.data);
+          break;
+        }
+        case RETWEET_FAILURE:
+          draft.retweetLoading = false;
+          draft.retweetError = action.error;
+          break;
+        case REMOVE_IMAGE :
+            draft.imagePaths = draft.imagePaths.filter((v,i)=> i !== action.data )
+            break;
         case LIKE_POST_REQUEST :
           draft.likePostLoading=true,
           draft.likePostDone=false;
@@ -176,9 +210,10 @@ const reducer = (state=initialState,action)=>{
             
         case LOAD_POST_SUCCESS :
               draft.mainPosts = draft.mainPosts.concat(action.data)
-              draft.hasMorePost = draft.mainPosts.length <50;
+              draft.hasMorePost = draft.mainPosts.length === 10;
               draft.loadPostLoading = false;
               draft.loadPostDone = true;
+              
               break;
           
         case LOAD_POST_FAILURE :
@@ -196,6 +231,7 @@ const reducer = (state=initialState,action)=>{
             draft.removePostLoading=false;
             draft.removePostDone=true;
             draft.mainPosts = draft.mainPosts.filter((v)=>v.id !== action.data.PostId);
+            draft.imagePaths = []
             break;                   
         
         case REMOVE_POST_FAILURE :
@@ -221,6 +257,25 @@ const reducer = (state=initialState,action)=>{
             draft.addCommentLoading=false,
             draft.addCommentError=action.error                
             break;
+
+        case UPLOAD_IMAGES_REQUEST :
+              draft.uploadImagesLoading=true,
+              draft.uploadImagesDone=false;
+              draft.uploadImagesError=null;
+            break;
+            
+        case UPLOAD_IMAGES_SUCCESS :       
+              draft.imagePaths = action.data;       
+              draft.uploadImagesLoading = false;
+              draft.uploadImagesDone = true;
+              break;
+          
+        case UPLOAD_IMAGES_FAILURE :
+              draft.uploadImagesLoading = false;
+              draft.uploadImagesError = action.error                
+              break;    
+
+
         default:
             return state;
         }

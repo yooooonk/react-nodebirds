@@ -1,5 +1,5 @@
 import { all, call, delay, fork, put, takeLatest, throttle } from "redux-saga/effects"
-import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, generateDummyPost, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS } from "../reducers/post";
+import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, generateDummyPost, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from "../reducers/post";
 import { ADD_POST_TO_ME,REMOVE_POST_OF_ME } from "../reducers/user";
 import axios from 'axios'
 
@@ -28,13 +28,14 @@ function* addPost(action){
 }
 
 function addPostAPI(data){        
-    return axios.post('/post',{content:data})
+    return axios.post('/post',data)
 }
 
-function* loadPost(){
+function* loadPost(action){
    
      try{
-        const result = yield call(loadPostAPI);
+         
+        const result = yield call(loadPostAPI,action.lastId);
                                 
         yield put({
             type:LOAD_POST_SUCCESS,
@@ -42,7 +43,7 @@ function* loadPost(){
         })
         
     }catch(err){
-        console.log(err)
+        console.error(err)
         yield put({
             type:LOAD_POST_FAILURE,
             data: err.response.data
@@ -50,8 +51,9 @@ function* loadPost(){
     }
 }
 
-function loadPostAPI(){
-    return axios.get('/posts')
+function loadPostAPI(lastId){   
+       
+    return axios.get(`/posts?lastId=${lastId||0}`)
 }
 
 function* removePost(action){
@@ -147,6 +149,55 @@ function unlikePostAPI(data){
     return axios.delete(`/post/${data}/like`)
 }
 
+function* uploadImages(action){
+    
+    try{
+        const result = yield call(uploadImagesAPI, action.data);
+                        
+        yield put({
+            type:UPLOAD_IMAGES_SUCCESS,
+            data:result.data
+        })
+
+      
+    }catch(err){
+        console.error(err)
+        yield put({
+            type:UPLOAD_IMAGES_FAILURE,
+            data:err.response.data
+        })
+    }
+}
+
+
+function uploadImagesAPI(data){
+    return axios.post(`/post/images`,data)
+}
+
+function retweetAPI(data) {
+    return axios.post(`/post/${data}/retweet`);
+  }
+  
+  function* retweet(action) {
+    try {
+      const result = yield call(retweetAPI, action.data);
+      yield put({
+        type: RETWEET_SUCCESS,
+        data: result.data,
+      });
+    } catch (err) {
+      console.error(err);
+      yield put({
+        type: RETWEET_FAILURE,
+        error: err.response.data,
+      });
+    }
+  }
+
+ function* watchRetweet() {
+    yield takeLatest(RETWEET_REQUEST, retweet);
+}
+
 function* watchAddPost(){
     yield takeLatest(ADD_POST_REQUEST,addPost)
 }
@@ -171,6 +222,10 @@ function* watchUnlikePost(){
     yield takeLatest(UNLIKE_POST_REQUEST,unlikePost)
 }
 
+function* watchUploadImages(){
+    yield takeLatest(UPLOAD_IMAGES_REQUEST,uploadImages)
+}
+
 export default function* postSaga(){
     yield all([
         fork(watchAddPost),
@@ -178,7 +233,9 @@ export default function* postSaga(){
         fork(watchRemovePost),
         fork(watchAddComment),
         fork(watchLikePost),
-        fork(watchUnlikePost)
+        fork(watchUnlikePost),
+        fork(watchUploadImages),
+        fork(watchRetweet),
         
     ])
 }
