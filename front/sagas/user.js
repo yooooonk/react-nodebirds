@@ -1,6 +1,6 @@
 import { all, call, delay, fork, put, takeLatest } from "redux-saga/effects";
 import axios from 'axios'
-import { CHANGE_NICKNAME_FAILURE, CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOAD_FOLLOWERS_FAILURE, LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWINGS_FAILURE, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS, LOAD_USER_FAILURE, LOAD_USER_REQUEST, LOAD_USER_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_OUT_FAILURE, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, SIGN_UP_FAILURE, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from "../reducers/user";
+import { CHANGE_NICKNAME_FAILURE, CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOAD_FOLLOWERS_FAILURE, LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWINGS_FAILURE, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS, LOAD_USER_FAILURE, LOAD_USER_REQUEST, LOAD_USER_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_OUT_FAILURE, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, REMOVE_FOLLOWER_FAILURE, REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS, SIGN_UP_FAILURE, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from "../reducers/user";
 
 function* loadUser(){
     
@@ -187,9 +187,33 @@ function* loadFollowings(){
         });
     }    
 }
+
+
 function loadFollowingsAPI(){
     return axios.get(`/user/followings`)
 }
+
+function* removeFollower(action){
+    try{        
+        const result = yield call(removeFollowerAPI,action.data);
+        
+        yield put({
+            type:REMOVE_FOLLOWER_SUCCESS,
+            data:result.data
+        })
+    }catch(err){
+        console.error(err)
+        yield put({
+            type: REMOVE_FOLLOWER_FAILURE,
+            error:err.response.data
+        });
+    }   
+}
+
+function removeFollowerAPI(data){
+    return axios.delete(`/user/follower/${data}`)
+}
+
 
 function* watchLoadUser(){    
     yield takeLatest(LOAD_USER_REQUEST,loadUser)
@@ -226,6 +250,9 @@ function* watchLoadFollwings(){
     yield takeLatest(LOAD_FOLLOWINGS_REQUEST,loadFollowings)
 }
 
+function* watchRemoveFollower(){
+    yield takeLatest(REMOVE_FOLLOWER_REQUEST,removeFollower)
+}
 
 export default function* userSaga(){
     yield all([
@@ -238,6 +265,7 @@ export default function* userSaga(){
         fork(watchChangeNickname),
         fork(watchLoadFollwers),
         fork(watchLoadFollwings),
+        fork(watchRemoveFollower),
         
     ])
 }

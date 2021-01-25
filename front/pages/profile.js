@@ -11,7 +11,7 @@ const Profile = ()=>{
     const {me} = useSelector((state)=>state.user);
     const dispatch = useDispatch();
 
-   /* useEffect(()=>{
+    useEffect(()=>{
         dispatch({
             type:LOAD_FOLLOWERS_REQUEST
         })
@@ -19,7 +19,7 @@ const Profile = ()=>{
         dispatch({
             type:LOAD_FOLLOWINGS_REQUEST
         })
-    })  */
+    },[]) 
 
     useEffect(()=>{
         if(!(me&&me.id)){
@@ -34,8 +34,8 @@ const Profile = ()=>{
     return(
        <AppLayout>
                 <NicknameEditForm />
-                <FollowingList header="팔로잉 목록" data={me.Followings} />
-                <FollowList header="팔로워 목록" data={me.Followers} />
+                <FollowList header="팔로잉" data={me.Followings} />
+                <FollowList header="팔로워" data={me.Followers} />
        </AppLayout>
        
     

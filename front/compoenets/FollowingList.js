@@ -18,12 +18,12 @@ const FollowingList = ({header,data})=>{
 
 
 
-    const onClick = ((id)=>{
-        /* console.log(id)
-        dispatch({
+    const unfollow = ((id)=>{
+        console.log('unfollow event',id)
+       /*  dispatch({
             type:UNFOLLOW_REQUEST,
             data:id
-        })  */
+        }) */
     }) 
     return(
         <List 
@@ -36,7 +36,7 @@ const FollowingList = ({header,data})=>{
             dataSource={data}
             renderItem={item=>(
                 <List.Item style={{marginTop:20}}>
-                    <Card actions={ [<StopOutlined key="stop" onClick={onClick(item.id)} />]} >
+                    <Card actions={ [<StopOutlined key="stop" onClick={unfollow(item.id)} />]} >
                         <Card.Meta description={item.nickname} />
                     </Card>
                 </List.Item>
