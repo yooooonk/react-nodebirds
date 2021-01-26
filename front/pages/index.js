@@ -6,6 +6,8 @@ import PostCard from "../compoenets/PostCard";
 import Postform from "../compoenets/PostForm";
 import { LOAD_POST_REQUEST } from "../reducers/post";
 import { LOAD_USER_REQUEST } from "../reducers/user";
+import wrapper from "../store/configureStore";
+import {END} from 'redux-saga';
 
 const Home = ()=>{
     const dispatch = useDispatch();
@@ -17,7 +19,7 @@ const Home = ()=>{
             alert(retweetError)
         }
     },[retweetError])
-    useEffect(()=>{             
+    /* useEffect(()=>{             
         dispatch({
             type:LOAD_USER_REQUEST
         }) 
@@ -25,7 +27,7 @@ const Home = ()=>{
             type:LOAD_POST_REQUEST
             
         }) 
-    },[])
+    },[]) */
 
     useEffect(()=>{
         function onScroll(){
@@ -56,5 +58,18 @@ const Home = ()=>{
         </AppLayout>
     )
 }
+
+export const getServerSideProps = wrapper.getServerSideProps(async (context)=>{
+    context.store.dispatch({        
+        type:LOAD_USER_REQUEST               
+    });
+
+    context.store.dispatch({
+        type:LOAD_POST_REQUEST
+    });
+
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise()
+})
 
 export default Home;

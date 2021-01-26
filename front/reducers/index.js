@@ -5,18 +5,21 @@ import { combineReducers } from 'redux';
 
 
 
-const rootReducer = combineReducers({
-    index : (state={},action)=>{
-        switch(action.type){
-            case HYDRATE : 
+const rootReducer = (state,action) => {
+    switch(action.type){
+        case HYDRATE :
                 console.log('HYDREATE',action);
-                return {...state,...action.payload};
-            default:return state;
+                return action.payload
+        default:{
+            const combinedReducer = combineReducers({                
+                user,
+                post
+            });
+
+        return combinedReducer(state,action);
         }
-    },
-    user,
-    post
-})
+    }
+} 
  
 
 export default rootReducer
