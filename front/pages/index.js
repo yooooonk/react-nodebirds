@@ -8,6 +8,7 @@ import { LOAD_POST_REQUEST } from "../reducers/post";
 import { LOAD_USER_REQUEST } from "../reducers/user";
 import wrapper from "../store/configureStore";
 import {END} from 'redux-saga';
+import axios from 'axios'
 
 const Home = ()=>{
     const dispatch = useDispatch();
@@ -19,16 +20,7 @@ const Home = ()=>{
             alert(retweetError)
         }
     },[retweetError])
-    /* useEffect(()=>{             
-        dispatch({
-            type:LOAD_USER_REQUEST
-        }) 
-       dispatch({
-            type:LOAD_POST_REQUEST
-            
-        }) 
-    },[]) */
-
+    
     useEffect(()=>{
         function onScroll(){
             
@@ -60,9 +52,16 @@ const Home = ()=>{
 }
 
 export const getServerSideProps = wrapper.getServerSideProps(async (context)=>{
+    
+    const cookie = context.req? context.req.headers.cookie : '';
+    axios.defaults.headers.Cookie = '';
+    if(context.req && cookie){
+        axios.defaults.headers.Cookie = cookie;
+    }
+
     context.store.dispatch({        
         type:LOAD_USER_REQUEST               
-    });
+    }); 
 
     context.store.dispatch({
         type:LOAD_POST_REQUEST

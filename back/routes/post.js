@@ -7,7 +7,7 @@ const router = express.Router();
 const {Post, Image, User, Comment, Hashtag} = require('../models')
 const {isLoggedIn} = require('./middleware');
 
-try{
+try{ 
     fs.accessSync('uploads');
 }catch(error){
     console.log('uploads 폴더가 없으므로 생성합니다')

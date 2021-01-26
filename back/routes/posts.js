@@ -6,12 +6,13 @@ const {Post, User, Comment, Image} = require('../models')
 router.get('/',async(req,res,next)=>{
     
     try {
+        console.log('header',req.headers)
         const where = {};
         
     if (parseInt(req.query.lastId, 10)) { // 초기 로딩이 아닐 때
         
       where.id = { [Op.lt]: parseInt(req.query.lastId, 10)}
-      console.log('초기로딩이 아닌디')
+      
     }
 
         const posts = await Post.findAll({            
