@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {User, Post} = require('../models');
+const {User, Post, Image, Comment, Hashtag} = require('../models');
 const bcrypt = require('bcrypt')
 const passport = require('passport');
 const {isLoggedIn, isNotLoggedIn} = require('./middleware')
@@ -41,6 +41,56 @@ router.get('/',async(req,res,next)=>{
 
     
 })
+
+router.get('/:id/posts', async (req, res, next) => { // GET /user/1/posts
+    try {
+      const user = await User.findOne({ where: { id: req.params.id }});
+      if (user) {
+        const where = {};
+        if (parseInt(req.query.lastId, 10)) { // 초기 로딩이 아닐 때
+          where.id = { [Op.lt]: parseInt(req.query.lastId, 10)}
+        } // 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1
+        const posts = await user.getPosts({
+          where,
+          limit: 10,
+          include: [{
+            model: Image,
+          }, {
+            model: Comment,
+            include: [{
+              model: User,
+              attributes: ['id', 'nickname'],
+            }]
+          }, {
+            model: User,
+            attributes: ['id', 'nickname'],
+          }, {
+            model: User,
+            through: 'Like',
+            as: 'Likers',
+            attributes: ['id'],
+          }, {
+            model: Post,
+            as: 'Retweet',
+            include: [{
+              model: User,
+              attributes: ['id', 'nickname'],
+            }, {
+              model: Image,
+            }]
+          }],
+        });
+        console.log(posts);
+        res.status(200).json(posts);
+      } else {
+        res.status(404).send('존재하지 않는 사용자입니다.');
+      }
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  });
+  
 
 router.post('/signup', isNotLoggedIn, async(req,res,next)=>{
     try{
@@ -184,7 +234,7 @@ router.get('/followers',isLoggedIn, async(req,res,next)=>{
             res.status(403).send('팔로워 목록을 가져올 수 없습니다')
         }
 
-        const followers = await me.getFollowers();
+        const followers = await me.getFollowers({limit:parseInt(req.query.limit,10)});
 
         res.status(200).json({followers})
     } catch (error) {
@@ -201,7 +251,7 @@ router.get('/followings',isLoggedIn, async(req,res,next)=>{
             res.status(403).send('팔로워 목록을 가져올 수 없습니다')
         }
 
-        const followings = await me.getFollowings();
+        const followings = await me.getFollowings({limit:parseInt(req.query.limit,10)});
 
         res.status(200).json({followings})
     } catch (error) {

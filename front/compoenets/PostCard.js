@@ -9,8 +9,9 @@ import CommentForm from "./CommentForm"
 import PostCardContent from "./PostCardContent"
 import { LIKE_POST_REQUEST, removePostRequest, RETWEET_REQUEST, UNLIKE_POST_REQUEST } from "../reducers/post"
 import FollowButton from "./FollowButton"
-
+import moment from 'moment'
  
+moment.locale('ko')
 
 const PostCard = ({post})=>{
     const dispatch = useDispatch()
@@ -84,6 +85,7 @@ const PostCard = ({post})=>{
             <Card
               cover={post.Retweet.Images[0] && <PostImages images={post.Retweet.Images} />}
             >
+              <span style={{ float: 'right' }}>{moment(post.createdAt).format('YYYY.MM.DD.')}</span>
               <Card.Meta
                 avatar={<Avatar>{post.Retweet.User.nickname[0]}</Avatar>}
                 title={post.Retweet.User.nickname}
@@ -92,11 +94,14 @@ const PostCard = ({post})=>{
             </Card>
           )
           : (
-            <Card.Meta
-              avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
-              title={post.User.nickname}
-              description={<PostCardContent postData={post.content} />}
-            />
+              <>
+                    <span style={{ float: 'right' }}>{moment(post.createdAt).format('YYYY.MM.DD.')}</span>
+                    <Card.Meta
+                    avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
+                    title={post.User.nickname}
+                    description={<PostCardContent postData={post.content} />}
+                    />
+            </>
           )}              
             </Card>
             {commentFormOpened &&(

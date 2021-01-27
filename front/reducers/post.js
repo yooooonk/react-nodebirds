@@ -6,9 +6,13 @@ import faker from 'faker'
 export const initialState = {
     mainPosts:[],
     imagePaths:[],
+    singlePost:null,
+    loadPostsLoading:false,
+    loadPostsDone:false,
+    loadPostsError:null,    
     loadPostLoading:false,
     loadPostDone:false,
-    loadPostError:null,
+    loadPostError:null,    
     hasMorePost:true,
     addPostLoading:false,
     addPostDone:false,
@@ -76,6 +80,18 @@ const dummyComment = (data)=>({
     nickname:'haha'
   }
 })
+
+export const LOAD_POSTS_REQUEST = 'LOAD_POSTS_REQUEST';
+export const LOAD_POSTS_SUCCESS = 'LOAD_POSTS_SUCCESS';
+export const LOAD_POSTS_FAILURE = 'LOAD_POSTS_FAILURE';
+
+export const LOAD_USER_POSTS_REQUEST = 'LOAD_USER_POSTS_REQUEST';
+export const LOAD_USER_POSTS_SUCCESS = 'LOAD_USER_POSTS_SUCCESS';
+export const LOAD_USER_POSTS_FAILURE = 'LOAD_USER_POSTS_FAILURE';
+
+export const LOAD_HASHTAG_POSTS_REQUEST = 'LOAD_HASHTAG_POSTS_REQUEST';
+export const LOAD_HASHTAG_POSTS_SUCCESS = 'LOAD_HASHTAG_POSTS_SUCCESS';
+export const LOAD_HASHTAG_POSTS_FAILURE = 'LOAD_HASHTAG_POSTS_FAILURE';
 
 export const LOAD_POST_REQUEST = 'LOAD_POST_REQUEST';
 export const LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS';
@@ -201,25 +217,47 @@ const reducer = (state=initialState,action)=>{
             draft.addPostLoading = false;
             draft.addPostError = action.error                
             break;
-        
-        case LOAD_POST_REQUEST :
-              draft.loadPostLoading=true,
-              draft.loadPostDone=false;
-              draft.loadPostError=null;
+        case LOAD_USER_POSTS_REQUEST:
+        case LOAD_HASHTAG_POSTS_REQUEST:
+        case LOAD_POSTS_REQUEST :
+              draft.loadPostsLoading=true,
+              draft.loadPostsDone=false;
+              draft.loadPostsError=null;
             break;
-            
-        case LOAD_POST_SUCCESS :
+        
+        case LOAD_USER_POSTS_SUCCESS:
+        case LOAD_HASHTAG_POSTS_SUCCESS:    
+        case LOAD_POSTS_SUCCESS :
               draft.mainPosts = draft.mainPosts.concat(action.data)
               draft.hasMorePost = draft.mainPosts.length === 10;
-              draft.loadPostLoading = false;
-              draft.loadPostDone = true;
+              draft.loadPostsLoading = false;
+              draft.loadPostsDone = true;
               
               break;
-          
-        case LOAD_POST_FAILURE :
-              draft.loadPostLoading = false;
-              draft.loadPostError = action.error                
+        case LOAD_USER_POSTS_FAILURE:
+        case LOAD_HASHTAG_POSTS_FAILURE:    
+        case LOAD_POSTS_FAILURE :
+              draft.loadPostsLoading = false;
+              draft.loadPostsError = action.error                
               break;
+
+        case LOAD_POST_REQUEST :
+                draft.loadPostLoading=true,
+                draft.loadPostDone=false;
+                draft.loadPostError=null;
+              break;
+              
+        case LOAD_POST_SUCCESS :
+                draft.singlePost = action.data;                
+                draft.loadPostLoading = false;
+                draft.loadPostDone = true;
+                
+                break;
+            
+          case LOAD_POST_FAILURE :
+                draft.loadPostLoading = false;
+                draft.loadPostError = action.error                
+                break;
 
         case REMOVE_POST_REQUEST :
             draft.removePostLoading=true,

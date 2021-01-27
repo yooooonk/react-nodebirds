@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import AppLayout from "../compoenets/AppLayout";
 import PostCard from "../compoenets/PostCard";
 import Postform from "../compoenets/PostForm";
-import { LOAD_POST_REQUEST } from "../reducers/post";
+import { LOAD_POSTS_REQUEST } from "../reducers/post";
 import { LOAD_USER_REQUEST } from "../reducers/user";
 import wrapper from "../store/configureStore";
 import {END} from 'redux-saga';
@@ -30,7 +30,7 @@ const Home = ()=>{
                     const lastId = mainPosts[mainPosts.length-1]?.id;
                     
                     dispatch({
-                        type:LOAD_POST_REQUEST,
+                        type:LOAD_POSTS_REQUEST,
                         lastId
                     })
                 }
@@ -64,7 +64,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async (context)=>{
     }); 
 
     context.store.dispatch({
-        type:LOAD_POST_REQUEST
+        type:LOAD_POSTS_REQUEST
     });
 
     context.store.dispatch(END);
