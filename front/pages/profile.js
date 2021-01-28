@@ -6,6 +6,7 @@ import {  useSelector } from "react-redux";
 import { useCallback, useEffect, useState } from "react";
 import useSWR from 'swr';
 import axios from 'axios'
+import { backUrl } from "../config/config";
 
 const fetcher = (url) => axios.get(url, { withCredentials: true }).then((result) => result.data);
 
@@ -14,8 +15,8 @@ const Profile = ()=>{
     const [followersLimit, setFollowersLimit] = useState(3);
     const [followingsLimit, setFollowingsLimit] = useState(3);
 
-    const { data: followingsData, error: followingError } = useSWR(`http://localhost:3065/user/followings?limit=${followersLimit}`, fetcher);
-    const { data: followersData, error: followerError } = useSWR(`http://localhost:3065/user/followers?limit=${followingsLimit}`, fetcher);
+    const { data: followingsData, error: followingError } = useSWR(`${backUrl}/user/followings?limit=${followersLimit}`, fetcher);
+    const { data: followersData, error: followerError } = useSWR(`${backUrl}/user/followers?limit=${followingsLimit}`, fetcher);
     
 console.log(followingsData)
 
